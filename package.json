@@ -1,0 +1,13 @@
+{
+  "name": "postman-pytest-migrator",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "python3 app.py",
+    "start": "python3 app.py",
+    "build": "echo 'No build step required for Flask'",
+    "lint": "echo 'No TypeScript linting required'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

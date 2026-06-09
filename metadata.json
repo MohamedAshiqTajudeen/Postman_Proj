@@ -1,0 +1,6 @@
+{
+  "name": "Postman Pytest Migrator",
+  "description": "An AI-assisted platform that parses Postman Collection JSON files to generate syntax-validated Python pytest automation suites with assertions and suggestions using Google Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Control Dashboard — Pytest Migrator</title>
+    <!-- Use Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            900: '#0F172A',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Linked Custom Actions and CSS sheets -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between" id="dashboard-page-wrapper">
+    
+    <!-- Decorative Ambient light spots -->
+    <div class="absolute top-0 right-10 w-[300px] h-[300px] bg-teal-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-10 left-10 w-[400px] h-[400px] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Navigation Header -->
+    <header class="border-b border-slate-800/60 bg-slate-900/40 backdrop-blur-md sticky top-0 z-50 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="/" class="flex items-center gap-3">
+                    <div class="h-9 w-9 bg-gradient-to-tr from-indigo-600 to-teal-500 rounded-lg flex items-center justify-center shadow-lg animate-pulse-border">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Pytest Migrator</span>
+                </a>
+            </div>
+            <nav class="flex gap-6 text-sm font-medium">
+                <a href="/" class="text-slate-400 hover:text-white transition-colors" id="nav-home">Home</a>
+                <a href="/upload" class="text-slate-400 hover:text-white transition-colors" id="nav-upload">Upload Suite</a>
+                <a href="/dashboard" class="text-indigo-400 transition-colors" id="nav-dashboard">Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Workspace Dashboard Wrapper -->
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full relative z-10">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6 mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-white tracking-tight" id="dashboard-heading">Migration Console</h2>
+                <p class="text-slate-400 text-sm mt-1">Audit conversion timelines, test coverage metrics, and generated python assets.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="/upload" class="bg-indigo-600 hover:bg-indigo-500 text-slate-100 font-semibold px-4 py-2 rounded-xl text-sm transition-all flex items-center gap-2 hover:shadow-lg hover:shadow-indigo-500/10" id="btn-upload-redirect">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Upload Collection</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 4 Column Premium Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 animate-fade-in">
+            <!-- Metric Card 1 -->
+            <div class="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl relative overflow-hidden group shadow-lg" id="stat-card-total">
+                <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                <span class="text-xs text-slate-500 font-semibold uppercase block tracking-wider">Migration Projects</span>
+                <span class="text-3xl font-extrabold text-white mt-2 block" id="total-suites-val">{{ collections|length }}</span>
+                <span class="text-[10px] text-teal-400 font-medium block mt-1 flex items-center gap-1">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                    <span>Imported collections log</span>
+                </span>
+            </div>
+
+            <!-- Metric Card 2 -->
+            <div class="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl relative overflow-hidden group shadow-lg" id="stat-card-apis">
+                <div class="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
+                <span class="text-xs text-slate-500 font-semibold uppercase block tracking-wider">Converted APIs</span>
+                <span class="text-3xl font-extrabold text-white mt-2 block" id="converted-apis-val">{{ total_apis_count }}</span>
+                <span class="text-[10px] text-slate-400 block mt-1">Extracted endpoints count</span>
+            </div>
+
+            <!-- Metric Card 3 -->
+            <div class="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl relative overflow-hidden group shadow-lg" id="stat-card-assertions">
+                <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                <span class="text-xs text-slate-500 font-semibold uppercase block tracking-wider">Assertions Translated</span>
+                <span class="text-3xl font-extrabold text-white mt-2 block" id="assertions-count-val">{{ total_assertions_count }}</span>
+                <span class="text-[10px] text-teal-400 font-medium block mt-1 flex items-center gap-1">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                    <span>Robust assertion coverage</span>
+                </span>
+            </div>
+
+            <!-- Metric Card 4 -->
+            <div class="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl relative overflow-hidden group shadow-lg" id="stat-card-rate">
+                <div class="absolute top-0 left-0 w-1 h-full bg-pink-500"></div>
+                <span class="text-xs text-slate-400 font-semibold uppercase block tracking-wider">Compiler Sync Rate</span>
+                <span class="text-3xl font-extrabold text-white mt-2 block" id="sync-rate-val">{{ avg_sync_rate }}%</span>
+                <span class="text-[10px] text-slate-400 block mt-1">Passed AST validation sandbox</span>
+            </div>
+        </div>
+
+        <!-- Filter Action and Table Layout -->
+        <div class="bg-slate-900/20 border border-slate-800/60 rounded-2xl overflow-hidden shadow-2xl animate-fade-in delay-150">
+            <!-- Search & Filters -->
+            <div class="p-6 border-b border-slate-800/80 bg-slate-900/30 flex flex-col sm:flex-row gap-4 justify-between items-center">
+                <h3 class="font-bold text-white text-base">Migration History Log</h3>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <span class="text-xs text-slate-400 shrink-0">Filter status:</span>
+                    <select id="status-filter" class="bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-lg px-3 py-2 outline-none focus:border-indigo-500/80 w-full sm:w-40 transition-colors">
+                        <option value="all">All Records</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="error">Failed</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Block -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/60 text-slate-400 text-xs font-semibold uppercase tracking-wider border-b border-slate-800/80">
+                        <tr>
+                            <th class="py-4 px-6">Collection Name</th>
+                            <th class="py-4 px-6">Status</th>
+                            <th class="py-4 px-6">API Endpoints</th>
+                            <th class="py-4 px-6">Success Rate</th>
+                            <th class="py-4 px-6">Processed On</th>
+                            <th class="py-4 px-6 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 bg-slate-900/10">
+                        {% for col in collections %}
+                        <tr class="hover:bg-slate-900/30 transition-colors collection-row" id="col-row-{{ col.id }}">
+                            <td class="py-4 px-6 font-medium text-white flex items-center gap-3">
+                                <div class="h-8 w-8 bg-indigo-950/40 border border-indigo-900/30 rounded-lg flex items-center justify-center text-indigo-400 shrink-0">
+                                    <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                    </svg>
+                                </div>
+                                <div class="truncate max-w-xs sm:max-w-md">
+                                    <span class="block text-slate-100 font-semibold">{{ col.collection_name }}</span>
+                                    <span class="block text-[10px] text-slate-500 uppercase font-mono mt-0.5">{{ col.file_name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                {% if col.status == 'Completed' %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-teal-950 text-teal-300 border border-teal-800/40 rounded-full text-xs font-semibold status-badge">
+                                    <span class="w-1.5 h-1.5 bg-teal-400 rounded-full"></span>
+                                    Completed
+                                </span>
+                                {% elif col.status == 'Pending' or col.status == 'pending' %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-yellow-950 text-yellow-300 border border-yellow-800/40 rounded-full text-xs font-semibold status-badge">
+                                    <span class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></span>
+                                    Pending
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-800/40 rounded-full text-xs font-semibold status-badge">
+                                    <span class="w-1.5 h-1.5 bg-rose-400 rounded-full"></span>
+                                    Error
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-6 font-mono text-slate-400 text-xs">{{ col.total_apis }} Endpoints</td>
+                            <td class="py-4 px-6">
+                                <div class="flex items-center gap-2">
+                                    {% set report = col_reports.get(col.id) %}
+                                    {% if report %}
+                                    <span class="text-xs font-semibold text-white">{{ report.success_percentage }}%</span>
+                                    <div class="w-16 h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                                        <div class="h-full bg-teal-500 rounded-full" style="width: {{ report.success_percentage }}%;"></div>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-xs font-semibold text-white">0%</span>
+                                    <div class="w-16 h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                                        <div class="h-full bg-slate-800 rounded-full" style="width: 0%;"></div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 text-xs text-slate-400">{{ col.uploaded_at }}</td>
+                            <td class="py-4 px-6 text-right">
+                                <a href="/results/{{ col.id }}" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors" id="btn-view-col-{{ col.id }}">View Suite &rarr;</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="py-8 px-6 text-center text-slate-500 text-sm">No migrated collection suites available. Upload a collection to get started!</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Space -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Core Pytest Migrator Automation. Security audit passed.</p>
+    </footer>
+
+    <!-- Include Javascript actions -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

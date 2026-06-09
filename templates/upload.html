@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Postman Collection — Pytest Migrator</title>
+    <!-- Use Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            900: '#0F172A',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Linked Custom Actions and CSS sheets -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between" id="upload-page-wrapper">
+    
+    <!-- Accent Glows -->
+    <div class="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-teal-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute top-[20%] left-10 w-[300px] h-[300px] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Navigation Header -->
+    <header class="border-b border-slate-800/60 bg-slate-900/40 backdrop-blur-md sticky top-0 z-50 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="/" class="flex items-center gap-3">
+                    <div class="h-9 w-9 bg-gradient-to-tr from-indigo-600 to-teal-500 rounded-lg flex items-center justify-center shadow-lg animate-pulse-border">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Pytest Migrator</span>
+                </a>
+            </div>
+            <nav class="flex gap-6 text-sm font-medium">
+                <a href="/" class="text-slate-400 hover:text-white transition-colors" id="nav-home">Home</a>
+                <a href="/upload" class="text-indigo-400 transition-colors" id="nav-upload">Upload Suite</a>
+                <a href="/dashboard" class="text-slate-400 hover:text-white transition-colors" id="nav-dashboard">Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Upload Workspace -->
+    <main class="max-w-xl mx-auto my-16 px-6 flex-grow flex flex-col justify-center w-full">
+        <div class="bg-slate-900/40 border border-slate-800/80 p-8 rounded-3xl shadow-2xl relative z-10 backdrop-blur-sm animate-fade-in">
+            
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-white mb-2" id="upload-heading">Import Postman JSON</h2>
+                <p class="text-slate-400 text-sm leading-relaxed max-w-sm mx-auto">Upload or drag exported Postman collections to compile directly into standard Python test scripts.</p>
+            </div>
+
+            <!-- Upload Area -->
+            <form action="/upload" method="POST" enctype="multipart/form-data" class="space-y-6" id="upload-form">
+                
+                <!-- Silent Input -->
+                <input type="file" name="file" id="file-input" class="hidden" accept=".json,application/json" required>
+
+                <!-- Drag zone container -->
+                <div class="border-2 border-dashed border-slate-700/80 hover:border-indigo-500/80 rounded-2xl p-10 text-center cursor-pointer transition-all bg-slate-900/20 hover:bg-slate-900/60 group relative overflow-hidden" id="upload-dropzone">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="mx-auto h-12 w-12 bg-slate-950/80 border border-slate-800 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 group-hover:border-indigo-500/30 transition-all mb-4 shadow-inner">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-slate-200 block mb-1 group-hover:text-white transition-colors" id="dragzone-main-text">Click to choose or drag Postman v2.x JSON</span>
+                        <span class="text-xs text-slate-500 block">Maximum collection payload limits: 50MB</span>
+                    </div>
+                </div>
+
+                <!-- Live File Info Badge -->
+                <div class="hidden bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 flex items-center justify-between gap-4" id="file-details">
+                    <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 bg-indigo-950 border border-indigo-800/30 rounded-lg flex items-center justify-center text-indigo-400">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div class="max-w-xs overflow-hidden">
+                            <span class="text-xs font-semibold text-slate-200 block truncate" id="file-name-display">untitled_collection.json</span>
+                            <span class="text-[10px] text-slate-500 block uppercase font-mono mt-0.5" id="file-size-display">0.0 KB</span>
+                        </div>
+                    </div>
+                    <button type="button" class="text-xs text-slate-500 hover:text-rose-400 transition-colors" onclick="window.location.reload();">Clear</button>
+                </div>
+
+                <!-- Simulation Progress loader -->
+                <div class="hidden space-y-2" id="progress-container">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400 font-medium" id="progress-text">Starting pipeline conversion...</span>
+                        <span class="text-slate-500 font-mono" id="progress-percentage">Please wait</span>
+                    </div>
+                    <div class="h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                        <div class="h-full bg-gradient-to-r from-indigo-500 to-teal-400 rounded-full transition-all duration-150" style="width: 0%;" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Trigger submit btn -->
+                <button type="submit" disabled class="w-full py-3 bg-slate-800 text-slate-500 font-semibold rounded-xl text-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-not-allowed shadow-lg" id="btn-submit">
+                    Import &amp; Parse Collection
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer Space -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Core Pytest Migrator Automation. Security audit passed.</p>
+    </footer>
+
+    <!-- Include Javascript actions -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

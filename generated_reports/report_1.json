@@ -1,0 +1,13 @@
+{
+    "collection_name": "Test Collection",
+    "collection_id": 1,
+    "total_apis": 0,
+    "total_assertions": 0,
+    "assertions_converted": 0,
+    "failed_conversions": 0,
+    "unsupported_assertions": 0,
+    "success_percentage": 100.0,
+    "warnings": [
+        "This Postman Collection is empty. No request nodes found."
+    ]
+}
